@@ -1,0 +1,10 @@
+*.swp
+*.raw
+*.spv
+shaders/embedded_shaders.js
+models/
+*.wasm
+js/liblas.js
+js/liblas_wrapper.js
+.DS_Store
+glslc.exe

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+                           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+                           crossorigin="anonymous">
+
+    <title>WebGPU Experiments</title>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h4>WebGPU Experiments</h4>
+                <canvas id="webgpu-canvas" class="img-fluid" width="640" height="480"></canvas>
+            </div>
+            <div class="col-12 text-center">
+                Demo of a glTF renderer using WebGPU. Supports loading binary glTF files only.
+                <p id="fps"></p>
+            </div>
+            <div class="col-12 col-lg-8 mx-auto">
+                <input type="file" class="custom-file-input" id="uploadGLB" accept=".glb"
+                       onchange="uploadGLB(this.files);">
+                <label class="custom-file-label" for="uploadGLB">Upload GLB File</label>
+            </div>
+        </div>
+    </div>
+    <script src="shaders/glb_shaders.js"></script>
+    <script src="js/gl-matrix-min.js"></script>
+    <script src="js/webgl-util.js"></script>
+    <script src="js/upload_glb.js"></script>
+    <script src="js/glb_import.js"></script>
+    <script src="js/glb_viewer.js"></script>
+</body>
+</html>
+
+
