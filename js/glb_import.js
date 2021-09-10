@@ -218,9 +218,8 @@ var GLTFPrimitive =
                  shaderModules,
                  swapChainFormat,
                  depthFormat) {
-    var shader =
-        generateGLTFShader(this.normals, this.texcoords.length > 0, this.material.baseColorTexture);
-    console.log(shader);
+    var shader = generateGLTFShader(
+        this.normals, this.texcoords.length > 0, this.material.baseColorTexture);
 
     var vertexBuffers = [{
         arrayStride: this.positions.byteStride(),
