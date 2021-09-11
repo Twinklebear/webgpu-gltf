@@ -91,6 +91,8 @@
             glbFile = await uploadGLBModel(glbBuffer, device);
             renderBundles = glbFile.buildRenderBundles(
                 device, viewParamsLayout, viewParamsBindGroup, swapChainFormat);
+            camera =
+                new ArcballCamera(defaultEye, center, up, 2, [canvas.width, canvas.height]);
             glbBuffer = null;
         }
 
