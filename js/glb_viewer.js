@@ -1,16 +1,13 @@
 (async () => {
     if (!navigator.gpu) {
-        alert("WebGPU is not supported/enabled in your browser");
+        document.getElementById("webgpu-canvas").setAttribute("style", "display:none;");
+        document.getElementById("no-webgpu").setAttribute("style", "display:block;");
         return;
     }
 
     var adapter = await navigator.gpu.requestAdapter();
     var device = await adapter.requestDevice();
 
-    /*
-     var glbFile = await fetch("/models/duck.glb")
-            .then(res => res.arrayBuffer().then(buf => uploadGLBModel(buf, device)));
-            */
     var glbFile =
         await fetch(
             "https://www.dl.dropboxusercontent.com/s/7ndj8pfjhact7lz/DamagedHelmet.glb?dl=1")
@@ -39,49 +36,6 @@
         }
     };
 
-    var shaderModules = {
-        posVert: {
-            module: device.createShaderModule({code: glb_pos_vert_spv}),
-            entryPoint: "main",
-        },
-        posFrag: {
-            module: device.createShaderModule({code: glb_pos_frag_spv}),
-            entryPoint: "main",
-        },
-        posNormalVert: {
-            module: device.createShaderModule({code: glb_posnormal_vert_spv}),
-            entryPoint: "main",
-        },
-        posNormalFrag: {
-            module: device.createShaderModule({code: glb_posnormal_frag_spv}),
-            entryPoint: "main",
-        },
-        posNormalUVVert: {
-            module: device.createShaderModule({code: glb_posnormaluv_vert_spv}),
-            entryPoint: "main",
-        },
-        posNormalUVFrag: {
-            module: device.createShaderModule({code: glb_posnormaluv_frag_spv}),
-            entryPoint: "main",
-        },
-        posUVVert: {
-            module: device.createShaderModule({code: glb_posuv_vert_spv}),
-            entryPoint: "main",
-        },
-        posUVFrag: {
-            module: device.createShaderModule({code: glb_posuv_frag_spv}),
-            entryPoint: "main",
-        },
-        pnuTexturedVert: {
-            module: device.createShaderModule({code: glb_pnutex_vert_spv}),
-            entryPoint: "main",
-        },
-        pnuTexturedFrag: {
-            module: device.createShaderModule({code: glb_pnutex_frag_spv}),
-            entryPoint: "main",
-        },
-    };
-
     var viewParamsLayout = device.createBindGroupLayout({
         entries: [{binding: 0, visibility: GPUShaderStage.VERTEX, buffer: {type: "uniform"}}]
     });
@@ -92,7 +46,7 @@
         {layout: viewParamsLayout, entries: [{binding: 0, resource: {buffer: viewParamBuf}}]});
 
     var renderBundles = glbFile.buildRenderBundles(
-        device, shaderModules, viewParamsLayout, viewParamsBindGroup, swapChainFormat);
+        device, viewParamsLayout, viewParamsBindGroup, swapChainFormat);
 
     const defaultEye = vec3.set(vec3.create(), 0.0, 0.0, 1.0);
     const center = vec3.set(vec3.create(), 0.0, 0.0, 0.0);
@@ -136,7 +90,7 @@
         if (glbBuffer != null) {
             glbFile = await uploadGLBModel(glbBuffer, device);
             renderBundles = glbFile.buildRenderBundles(
-                device, shaderModules, viewParamsLayout, viewParamsBindGroup, swapChainFormat);
+                device, viewParamsLayout, viewParamsBindGroup, swapChainFormat);
             glbBuffer = null;
         }
 

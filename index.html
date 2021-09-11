@@ -15,7 +15,10 @@
         <div class="row">
             <div class="col-12 text-center">
                 <h4>WebGPU glTF</h4>
-                <canvas id="webgpu-canvas" class="img-fluid" width="640" height="480"></canvas>
+                <canvas id="webgpu-canvas" class="img-fluid" width="1280" height="720"></canvas>
+                <div class="col-12 alert alert-danger" id="no-webgpu" style="display:none;">
+                    <h4>Error: Your browser does not support WebGPU</h4>
+                </div>
             </div>
             <div class="col-12 text-center">
                 Demo of a glTF renderer using WebGPU. Supports loading binary glTF files only.
