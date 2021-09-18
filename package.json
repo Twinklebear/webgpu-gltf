@@ -5,7 +5,8 @@
   "main": "glb_viewer.js",
   "scripts": {
     "build": "webpack",
-    "serve": "webpack server"
+    "serve": "webpack server",
+    "deploy": "webpack --mode=production"
   },
   "repository": {
     "type": "git",
