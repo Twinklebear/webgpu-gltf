@@ -3,6 +3,7 @@ import {Controller} from "ez_canvas_controller";
 import {mat4, vec3} from "gl-matrix";
 
 import {uploadGLBModel} from "./glb_import.js";
+import {GLBShaderCache} from "./glb_shader_cache.js";
 
 (async () => {
     if (navigator.gpu === undefined) {
@@ -51,8 +52,10 @@ import {uploadGLBModel} from "./glb_import.js";
     var viewParamsBindGroup = device.createBindGroup(
         {layout: viewParamsLayout, entries: [{binding: 0, resource: {buffer: viewParamBuf}}]});
 
+    var shaderCache = new GLBShaderCache(device);
+
     var renderBundles = glbFile.buildRenderBundles(
-        device, viewParamsLayout, viewParamsBindGroup, swapChainFormat);
+        device, shaderCache, viewParamsLayout, viewParamsBindGroup, swapChainFormat);
 
     const defaultEye = vec3.set(vec3.create(), 0.0, 0.0, 1.0);
     const center = vec3.set(vec3.create(), 0.0, 0.0, 0.0);
@@ -110,7 +113,7 @@ import {uploadGLBModel} from "./glb_import.js";
         if (glbBuffer != null) {
             glbFile = await uploadGLBModel(glbBuffer, device);
             renderBundles = glbFile.buildRenderBundles(
-                device, viewParamsLayout, viewParamsBindGroup, swapChainFormat);
+                device, shaderCache, viewParamsLayout, viewParamsBindGroup, swapChainFormat);
             camera =
                 new ArcballCamera(defaultEye, center, up, 2, [canvas.width, canvas.height]);
             glbBuffer = null;

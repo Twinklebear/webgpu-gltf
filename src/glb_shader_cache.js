@@ -1,4 +1,31 @@
-export function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
+export class GLBShaderCache {
+    constructor(device)
+    {
+        this.device = device;
+        this.shaderCache = {};
+    }
+
+    getShader(hasNormals, hasUVs, hasColorTexture)
+    {
+        var shaderID = "glb";
+        if (hasNormals) {
+            shaderID += "n";
+        }
+        if (hasUVs) {
+            shaderID += "uv";
+        }
+        if (hasColorTexture) {
+            shaderID += "colortex";
+        }
+        if (!(shaderID in this.shaderCache)) {
+            var shaderSource = generateGLTFShader(hasNormals, hasUVs, hasColorTexture);
+            this.shaderCache[shaderID] = this.device.createShaderModule({code: shaderSource});
+        }
+        return this.shaderCache[shaderID];
+    }
+}
+
+function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
 {
     var typeDefs =
         `

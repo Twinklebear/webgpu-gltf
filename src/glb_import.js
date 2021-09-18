@@ -1,7 +1,5 @@
 import {mat4} from "gl-matrix";
 
-import {generateGLTFShader} from "./glb_shader_generator.js";
-
 const GLTFRenderMode = {
     POINTS: 0,
     LINE: 1,
@@ -224,9 +222,10 @@ export class GLTFPrimitive {
     }
 
     // Build the primitive render commands into the bundle
-    buildRenderBundle(device, bindGroupLayouts, bundleEncoder, swapChainFormat, depthFormat)
+    buildRenderBundle(
+        device, shaderCache, bindGroupLayouts, bundleEncoder, swapChainFormat, depthFormat)
     {
-        var shader = generateGLTFShader(
+        var shaderModule = shaderCache.getShader(
             this.normals, this.texcoords.length > 0, this.material.baseColorTexture);
 
         var vertexBuffers = [{
@@ -253,8 +252,6 @@ export class GLTFPrimitive {
             bindGroupLayouts:
                 [bindGroupLayouts[0], bindGroupLayouts[1], this.material.bindGroupLayout],
         });
-
-        var shaderModule = device.createShaderModule({code: shader});
 
         var vertexStage = {
             module: shaderModule,
@@ -338,8 +335,12 @@ export class GLTFNode {
         this.gpuUniforms = buf;
     }
 
-    buildRenderBundle(
-        device, viewParamsLayout, viewParamsBindGroup, swapChainFormat, depthFormat)
+    buildRenderBundle(device,
+                      shaderCache,
+                      viewParamsLayout,
+                      viewParamsBindGroup,
+                      swapChainFormat,
+                      depthFormat)
     {
         var nodeParamsLayout = device.createBindGroupLayout({
             entries:
@@ -362,8 +363,12 @@ export class GLTFNode {
         bundleEncoder.setBindGroup(1, this.bindGroup);
 
         for (var i = 0; i < this.mesh.primitives.length; ++i) {
-            this.mesh.primitives[i].buildRenderBundle(
-                device, bindGroupLayouts, bundleEncoder, swapChainFormat, depthFormat);
+            this.mesh.primitives[i].buildRenderBundle(device,
+                                                      shaderCache,
+                                                      bindGroupLayouts,
+                                                      bundleEncoder,
+                                                      swapChainFormat,
+                                                      depthFormat);
         }
 
         this.renderBundle = bundleEncoder.finish();
@@ -576,12 +581,14 @@ export class GLBModel {
         this.nodes = nodes;
     }
 
-    buildRenderBundles(device, viewParamsLayout, viewParamsBindGroup, swapChainFormat)
+    buildRenderBundles(
+        device, shaderCache, viewParamsLayout, viewParamsBindGroup, swapChainFormat)
     {
         var renderBundles = [];
         for (var i = 0; i < this.nodes.length; ++i) {
             var n = this.nodes[i];
             var bundle = n.buildRenderBundle(device,
+                                             shaderCache,
                                              viewParamsLayout,
                                              viewParamsBindGroup,
                                              swapChainFormat,
