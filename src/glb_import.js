@@ -1,3 +1,7 @@
+import {mat4} from "gl-matrix";
+
+import {generateGLTFShader} from "./glb_shader_generator.js";
+
 const GLTFRenderMode = {
     POINTS: 0,
     LINE: 1,
@@ -36,12 +40,13 @@ const GLTFTextureWrap = {
     MIRRORED_REPEAT: 33648,
 };
 
-var alignTo = function(val, align) {
+function alignTo(val, align)
+{
     return Math.floor((val + align - 1) / align) * align;
 };
 
-var gltfTypeNumComponents =
-    function(type) {
+function gltfTypeNumComponents(type)
+{
     switch (type) {
     case 'SCALAR':
         return 1;
@@ -57,8 +62,8 @@ var gltfTypeNumComponents =
     }
 }
 
-var gltfTypeToWebGPU =
-    function(componentType, type) {
+function gltfTypeToWebGPU(componentType, type)
+{
     var typeStr = null;
     switch (componentType) {
     case GLTFComponentType.BYTE:
@@ -103,8 +108,8 @@ var gltfTypeToWebGPU =
     }
 }
 
-var gltfTypeSize =
-    function(componentType, type) {
+function gltfTypeSize(componentType, type)
+{
     var typeSize = 0;
     switch (componentType) {
     case GLTFComponentType.BYTE:
@@ -137,7 +142,7 @@ var gltfTypeSize =
     return gltfTypeNumComponents(type) * typeSize;
 }
 
-class GLTFBuffer {
+export class GLTFBuffer {
     constructor(buffer, size, offset)
     {
         this.arrayBuffer = buffer;
@@ -146,7 +151,7 @@ class GLTFBuffer {
     }
 }
 
-class GLTFBufferView {
+export class GLTFBufferView {
     constructor(buffer, view)
     {
         this.length = view['byteLength'];
@@ -184,7 +189,7 @@ class GLTFBufferView {
     }
 }
 
-class GLTFAccessor {
+export class GLTFAccessor {
     constructor(view, accessor)
     {
         this.count = accessor['count'];
@@ -207,7 +212,7 @@ class GLTFAccessor {
     }
 }
 
-class GLTFPrimitive {
+export class GLTFPrimitive {
     constructor(indices, positions, normals, texcoords, material, topology)
     {
         this.indices = indices;
@@ -305,7 +310,7 @@ class GLTFPrimitive {
     }
 }
 
-class GLTFMesh {
+export class GLTFMesh {
     constructor(name, primitives)
     {
         this.name = name;
@@ -313,7 +318,7 @@ class GLTFMesh {
     }
 }
 
-class GLTFNode {
+export class GLTFNode {
     constructor(name, mesh, transform)
     {
         this.name = name;
@@ -366,8 +371,8 @@ class GLTFNode {
     }
 }
 
-var readNodeTransform =
-    function(node) {
+function readNodeTransform(node)
+{
     if (node['matrix']) {
         var m = node['matrix'];
         // Both glTF and gl matrix are column major
@@ -405,8 +410,8 @@ var readNodeTransform =
     }
 }
 
-var flattenGLTFChildren =
-    function(nodes, node, parent_transform) {
+function flattenGLTFChildren(nodes, node, parent_transform)
+{
     var tfm = readNodeTransform(node);
     var tfm = mat4.mul(tfm, parent_transform, tfm);
     node['matrix'] = tfm;
@@ -421,8 +426,8 @@ var flattenGLTFChildren =
     }
 }
 
-var makeGLTFSingleLevel =
-    function(nodes) {
+function makeGLTFSingleLevel(nodes)
+{
     var rootTfm = mat4.create();
     for (var i = 0; i < nodes.length; ++i) {
         flattenGLTFChildren(nodes, nodes[i], rootTfm);
@@ -430,7 +435,7 @@ var makeGLTFSingleLevel =
     return nodes;
 }
 
-class GLTFMaterial {
+export class GLTFMaterial {
     constructor(material, textures)
     {
         this.baseColorFactor = [1, 1, 1, 1];
@@ -512,7 +517,7 @@ class GLTFMaterial {
     }
 }
 
-class GLTFSampler {
+export class GLTFSampler {
     constructor(sampler, device)
     {
         var magFilter = sampler['magFilter'] === undefined ||
@@ -555,7 +560,7 @@ class GLTFSampler {
     }
 }
 
-class GLTFTexture {
+export class GLTFTexture {
     constructor(sampler, image)
     {
         this.gltfsampler = sampler;
@@ -565,7 +570,7 @@ class GLTFTexture {
     }
 }
 
-class GLBModel {
+export class GLBModel {
     constructor(nodes)
     {
         this.nodes = nodes;
@@ -588,7 +593,8 @@ class GLBModel {
 };
 
 // Upload a GLB model and return it
-var uploadGLBModel = async function(buffer, device) {
+export async function uploadGLBModel(buffer, device)
+{
     // The file header and chunk 0 header
     // TODO: It sounds like the spec does allow for multiple binary chunks,
     // so then how do you know which chunk a buffer exists in? Maybe the buffer

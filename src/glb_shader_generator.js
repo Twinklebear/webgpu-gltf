@@ -1,4 +1,5 @@
-var generateGLTFShader = function(hasNormals, hasUVs, hasColorTexture) {
+export function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
+{
     var typeDefs =
         `
     type float2 = vec2<f32>;

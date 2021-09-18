@@ -1,3 +1,9 @@
+import {ArcballCamera} from "arcball_camera";
+import {Controller} from "ez_canvas_controller";
+import {mat4, vec3} from "gl-matrix";
+
+import {uploadGLBModel} from "./glb_import.js";
+
 (async () => {
     if (navigator.gpu === undefined) {
         document.getElementById("webgpu-canvas").setAttribute("style", "display:none;");
@@ -82,9 +88,23 @@
     };
     requestAnimationFrame(animationFrame);
 
+    // Setup onchange listener for file uploads
+    var glbBuffer = null;
+    document.getElementById("uploadGLB").onchange =
+        function uploadGLB() {
+        var reader = new FileReader();
+        reader.onerror = function() {
+            alert("error reading GLB file");
+        };
+        reader.onload = function() {
+            glbBuffer = reader.result;
+        };
+        reader.readAsArrayBuffer(this.files[0]);
+    }
+
     var fpsDisplay = document.getElementById("fps");
-    numFrames = 0;
-    totalTimeMS = 0;
+    var numFrames = 0;
+    var totalTimeMS = 0;
     while (true) {
         await animationFrame();
         if (glbBuffer != null) {
