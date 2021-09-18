@@ -1,5 +1,5 @@
 (async () => {
-    if (!navigator.gpu) {
+    if (navigator.gpu === undefined) {
         document.getElementById("webgpu-canvas").setAttribute("style", "display:none;");
         document.getElementById("no-webgpu").setAttribute("style", "display:block;");
         return;
