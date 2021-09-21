@@ -13,6 +13,11 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
     }
 
     var adapter = await navigator.gpu.requestAdapter();
+    if (!adapter) {
+        document.getElementById("webgpu-canvas").setAttribute("style", "display:none;");
+        document.getElementById("no-webgpu").setAttribute("style", "display:block;");
+        return;
+    }
     var device = await adapter.requestDevice();
 
     var glbFile =
