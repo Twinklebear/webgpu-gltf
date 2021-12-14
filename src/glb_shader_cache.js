@@ -71,7 +71,6 @@ function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
 
     var vertexUniformParams =
         `
-    [[block]]
     struct Mat4Uniform {
         m: mat4x4<f32>;
     };
@@ -108,7 +107,6 @@ function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
 
     var fragmentParams =
         `
-    [[block]]
     struct MaterialParams {
         base_color_factor: float4;
         emissive_factor: float4;

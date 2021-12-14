@@ -184,6 +184,7 @@ export class GLTFBufferView {
         new (this.buffer.constructor)(buf.getMappedRange()).set(this.buffer);
         buf.unmap();
         this.gpuBuffer = buf;
+        this.needsUpload = false;
     }
 }
 
@@ -284,22 +285,28 @@ export class GLTFPrimitive {
 
         bundleEncoder.setBindGroup(2, this.material.bindGroup);
         bundleEncoder.setPipeline(renderPipeline);
-        bundleEncoder.setVertexBuffer(
-            0, this.positions.view.gpuBuffer, this.positions.byteOffset, 0);
+        bundleEncoder.setVertexBuffer(0,
+                                      this.positions.view.gpuBuffer,
+                                      this.positions.byteOffset,
+                                      this.positions.length);
         if (this.normals) {
             bundleEncoder.setVertexBuffer(
-                1, this.normals.view.gpuBuffer, this.normals.byteOffset, 0);
+                1, this.normals.view.gpuBuffer, this.normals.byteOffset, this.normals.length);
         }
         if (this.texcoords.length > 0) {
-            bundleEncoder.setVertexBuffer(
-                2, this.texcoords[0].view.gpuBuffer, this.texcoords[0].byteOffset, 0);
+            bundleEncoder.setVertexBuffer(2,
+                                          this.texcoords[0].view.gpuBuffer,
+                                          this.texcoords[0].byteOffset,
+                                          this.texcoords[0].length);
         }
         if (this.indices) {
             var indexFormat = this.indices.componentType == GLTFComponentType.UNSIGNED_SHORT
                                   ? 'uint16'
                                   : 'uint32';
-            bundleEncoder.setIndexBuffer(
-                this.indices.view.gpuBuffer, indexFormat, this.indices.byteOffset, 0);
+            bundleEncoder.setIndexBuffer(this.indices.view.gpuBuffer,
+                                         indexFormat,
+                                         this.indices.byteOffset,
+                                         this.indices.length);
             bundleEncoder.drawIndexed(this.indices.count);
         } else {
             bundleEncoder.draw(this.positions.count);
