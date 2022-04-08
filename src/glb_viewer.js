@@ -38,12 +38,14 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
     });
 
     var renderPassDesc = {
-        colorAttachments: [{view: undefined, loadValue: [0.3, 0.3, 0.3, 1]}],
+        colorAttachments: [{view: undefined, loadOp: "clear", clearValue: [0.3, 0.3, 0.3, 1]}],
         depthStencilAttachment: {
             view: depthTexture.createView(),
-            depthLoadValue: 1,
+            depthLoadOp: "clear",
+            depthClearValue: 1,
             depthStoreOp: "store",
-            stencilLoadValue: 0,
+            stencilLoadOp: "clear",
+            stencilClearValue: 0,
             stencilStoreOp: "store"
         }
     };
@@ -143,7 +145,7 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
         var renderPass = commandEncoder.beginRenderPass(renderPassDesc);
         renderPass.executeBundles(renderBundles);
 
-        renderPass.endPass();
+        renderPass.end();
         device.queue.submit([commandEncoder.finish()]);
         await device.queue.onSubmittedWorkDone();
 
