@@ -37,33 +37,33 @@ function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
     var vertexInputStruct =
         `
     struct VertexInput {
-        @location(0) position: float3;
+        @location(0) position: float3,
     `;
 
     var vertexOutputStruct =
         `
     struct VertexOutput {
-        @builtin(position) position: float4;
+        @builtin(position) position: float4,
     `;
 
     if (hasNormals) {
         vertexInputStruct +=
             `
-        @location(1) normal: float3;
+        @location(1) normal: float3,
         `;
         vertexOutputStruct +=
             `
-        @location(1) normal: float3;
+        @location(1) normal: float3,
         `;
     }
     if (hasUVs) {
         vertexInputStruct +=
             `
-        @location(2) uv: float2;
+        @location(2) uv: float2,
         `;
         vertexOutputStruct +=
             `
-        @location(2) uv: float2;
+        @location(2) uv: float2,
         `;
     }
     vertexInputStruct += '};';
@@ -72,7 +72,7 @@ function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
     var vertexUniformParams =
         `
     struct Mat4Uniform {
-        m: mat4x4<f32>;
+        m: mat4x4<f32>,
     };
 
     @group(0) @binding(0)
@@ -83,7 +83,7 @@ function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
 
     var vertexStage = vertexInputStruct + vertexOutputStruct + vertexUniformParams +
                       `
-    @stage(vertex)
+    @vertex
     fn vertex_main(vin: VertexInput) -> VertexOutput {
         var vout: VertexOutput;
         vout.position = view_proj.m * node_transform.m * float4(vin.position, 1.0);
@@ -108,10 +108,10 @@ function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
     var fragmentParams =
         `
     struct MaterialParams {
-        base_color_factor: float4;
-        emissive_factor: float4;
-        metallic_factor: f32;
-        roughness_factor: f32;
+        base_color_factor: float4,
+        emissive_factor: float4,
+        metallic_factor: f32,
+        roughness_factor: f32,
     };
 
     @group(2) @binding(0)
@@ -137,7 +137,7 @@ function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
         return 1.055 * pow(x, 1.0 / 2.4) - 0.055;
     }
 
-    @stage(fragment)
+    @fragment
     fn fragment_main(fin: VertexOutput) -> @location(0) float4 {
         var color = float4(material.base_color_factor.xyz, 1.0);
     `;
