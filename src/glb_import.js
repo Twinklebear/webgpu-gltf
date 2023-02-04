@@ -583,6 +583,7 @@ export class GLBModel {
 
 // Upload a GLB model and return it
 export async function uploadGLBModel(buffer, device) {
+    document.getElementById("loading-text").hidden = false;
     // The file header and chunk 0 header
     // TODO: It sounds like the spec does allow for multiple binary chunks,
     // so then how do you know which chunk a buffer exists in? Maybe the buffer
@@ -743,5 +744,6 @@ export async function uploadGLBModel(buffer, device) {
             nodes.push(node);
         }
     }
+    document.getElementById("loading-text").hidden = true;
     return new GLBModel(nodes);
 }

@@ -102,6 +102,7 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
     var glbBuffer = null;
     document.getElementById("uploadGLB").onchange =
         function uploadGLB() {
+            document.getElementById("loading-text").hidden = false;
             var reader = new FileReader();
             reader.onerror = function () {
                 alert("error reading GLB file");
