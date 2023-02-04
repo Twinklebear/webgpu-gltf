@@ -38,7 +38,7 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
     });
 
     var renderPassDesc = {
-        colorAttachments: [{view: undefined, loadOp: "clear", clearValue: [0.3, 0.3, 0.3, 1]}],
+        colorAttachments: [{view: undefined, loadOp: "clear", clearValue: [0.3, 0.3, 0.3, 1], storeOp: "store"}],
         depthStencilAttachment: {
             view: depthTexture.createView(),
             depthLoadOp: "clear",
@@ -73,7 +73,7 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
     var projView = mat4.create();
 
     var controller = new Controller();
-    controller.mousemove = function(prev, cur, evt) {
+    controller.mousemove = function (prev, cur, evt) {
         if (evt.buttons == 1) {
             camera.rotate(prev, cur);
 
@@ -81,16 +81,16 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
             camera.pan([cur[0] - prev[0], prev[1] - cur[1]]);
         }
     };
-    controller.wheel = function(amt) {
+    controller.wheel = function (amt) {
         camera.zoom(amt * 0.5);
     };
     controller.pinch = controller.wheel;
-    controller.twoFingerDrag = function(drag) {
+    controller.twoFingerDrag = function (drag) {
         camera.pan(drag);
     };
     controller.registerForCanvas(canvas);
 
-    var animationFrame = function() {
+    var animationFrame = function () {
         var resolve = null;
         var promise = new Promise(r => resolve = r);
         window.requestAnimationFrame(resolve);
@@ -102,15 +102,15 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
     var glbBuffer = null;
     document.getElementById("uploadGLB").onchange =
         function uploadGLB() {
-        var reader = new FileReader();
-        reader.onerror = function() {
-            alert("error reading GLB file");
-        };
-        reader.onload = function() {
-            glbBuffer = reader.result;
-        };
-        reader.readAsArrayBuffer(this.files[0]);
-    }
+            var reader = new FileReader();
+            reader.onerror = function () {
+                alert("error reading GLB file");
+            };
+            reader.onload = function () {
+                glbBuffer = reader.result;
+            };
+            reader.readAsArrayBuffer(this.files[0]);
+        }
 
     var fpsDisplay = document.getElementById("fps");
     var numFrames = 0;

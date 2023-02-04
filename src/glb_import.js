@@ -38,111 +38,106 @@ const GLTFTextureWrap = {
     MIRRORED_REPEAT: 33648,
 };
 
-function alignTo(val, align)
-{
+function alignTo(val, align) {
     return Math.floor((val + align - 1) / align) * align;
-};
+}
 
-function gltfTypeNumComponents(type)
-{
+function gltfTypeNumComponents(type) {
     switch (type) {
-    case 'SCALAR':
-        return 1;
-    case 'VEC2':
-        return 2;
-    case 'VEC3':
-        return 3;
-    case 'VEC4':
-        return 4;
-    default:
-        alert('Unhandled glTF Type ' + type);
-        return null;
+        case 'SCALAR':
+            return 1;
+        case 'VEC2':
+            return 2;
+        case 'VEC3':
+            return 3;
+        case 'VEC4':
+            return 4;
+        default:
+            alert('Unhandled glTF Type ' + type);
+            return null;
     }
 }
 
-function gltfTypeToWebGPU(componentType, type)
-{
+function gltfTypeToWebGPU(componentType, type) {
     var typeStr = null;
     switch (componentType) {
-    case GLTFComponentType.BYTE:
-        typeStr = 'char';
-        break;
-    case GLTFComponentType.UNSIGNED_BYTE:
-        typeStr = 'uchar';
-        break;
-    case GLTFComponentType.SHORT:
-        typeStr = 'short';
-        break;
-    case GLTFComponentType.UNSIGNED_SHORT:
-        typeStr = 'ushort';
-        break;
-    case GLTFComponentType.INT:
-        typeStr = 'int';
-        break;
-    case GLTFComponentType.UNSIGNED_INT:
-        typeStr = 'uint';
-        break;
-    case GLTFComponentType.FLOAT:
-        typeStr = 'float';
-        break;
-    case GLTFComponentType.DOUBLE:
-        typeStr = 'double';
-        break;
-    default:
-        alert('Unrecognized GLTF Component Type?');
+        case GLTFComponentType.BYTE:
+            typeStr = 'char';
+            break;
+        case GLTFComponentType.UNSIGNED_BYTE:
+            typeStr = 'uchar';
+            break;
+        case GLTFComponentType.SHORT:
+            typeStr = 'short';
+            break;
+        case GLTFComponentType.UNSIGNED_SHORT:
+            typeStr = 'ushort';
+            break;
+        case GLTFComponentType.INT:
+            typeStr = 'int';
+            break;
+        case GLTFComponentType.UNSIGNED_INT:
+            typeStr = 'uint';
+            break;
+        case GLTFComponentType.FLOAT:
+            typeStr = 'float';
+            break;
+        case GLTFComponentType.DOUBLE:
+            typeStr = 'double';
+            break;
+        default:
+            alert('Unrecognized GLTF Component Type?');
     }
 
     switch (gltfTypeNumComponents(type)) {
-    case 1:
-        return typeStr;
-    case 2:
-        return typeStr + '2';
-    case 3:
-        return typeStr + '3';
-    case 4:
-        return typeStr + '4';
-    default:
-        alert('Too many components!');
+        case 1:
+            return typeStr;
+        case 2:
+            return typeStr + '2';
+        case 3:
+            return typeStr + '3';
+        case 4:
+            return typeStr + '4';
+        default:
+            alert('Too many components!');
     }
 }
 
-function gltfTypeSize(componentType, type)
-{
+function gltfTypeSize(componentType, type) {
     var typeSize = 0;
     switch (componentType) {
-    case GLTFComponentType.BYTE:
-        typeSize = 1;
-        break;
-    case GLTFComponentType.UNSIGNED_BYTE:
-        typeSize = 1;
-        break;
-    case GLTFComponentType.SHORT:
-        typeSize = 2;
-        break;
-    case GLTFComponentType.UNSIGNED_SHORT:
-        typeSize = 2;
-        break;
-    case GLTFComponentType.INT:
-        typeSize = 4;
-        break;
-    case GLTFComponentType.UNSIGNED_INT:
-        typeSize = 4;
-        break;
-    case GLTFComponentType.FLOAT:
-        typeSize = 4;
-        break;
-    case GLTFComponentType.DOUBLE:
-        typeSize = 4;
-        break;
-    default:
-        alert('Unrecognized GLTF Component Type?');
+        case GLTFComponentType.BYTE:
+            typeSize = 1;
+            break;
+        case GLTFComponentType.UNSIGNED_BYTE:
+            typeSize = 1;
+            break;
+        case GLTFComponentType.SHORT:
+            typeSize = 2;
+            break;
+        case GLTFComponentType.UNSIGNED_SHORT:
+            typeSize = 2;
+            break;
+        case GLTFComponentType.INT:
+            typeSize = 4;
+            break;
+        case GLTFComponentType.UNSIGNED_INT:
+            typeSize = 4;
+            break;
+        case GLTFComponentType.FLOAT:
+            typeSize = 4;
+            break;
+        case GLTFComponentType.DOUBLE:
+            typeSize = 4;
+            break;
+        default:
+            alert('Unrecognized GLTF Component Type?');
     }
     return gltfTypeNumComponents(type) * typeSize;
 }
 
 export class GLTFBuffer {
-    constructor(buffer, size, offset)
-    {
+    constructor(buffer, size, offset) {
         this.arrayBuffer = buffer;
         this.size = size;
         this.byteOffset = offset;
@@ -150,8 +145,7 @@ export class GLTFBuffer {
 }
 
 export class GLTFBufferView {
-    constructor(buffer, view)
-    {
+    constructor(buffer, view) {
         this.length = view['byteLength'];
         this.byteOffset = buffer.byteOffset;
         if (view['byteOffset'] !== undefined) {
@@ -168,13 +162,11 @@ export class GLTFBufferView {
         this.usage = 0;
     }
 
-    addUsage(usage)
-    {
+    addUsage(usage) {
         this.usage = this.usage | usage;
     }
 
-    upload(device)
-    {
+    upload(device) {
         // Note: must align to 4 byte size when mapped at creation is true
         var buf = device.createBuffer({
             size: alignTo(this.buffer.byteLength, 4),
@@ -189,8 +181,7 @@ export class GLTFBufferView {
 }
 
 export class GLTFAccessor {
-    constructor(view, accessor)
-    {
+    constructor(view, accessor) {
         this.count = accessor['count'];
         this.componentType = accessor['componentType'];
         this.gltfType = accessor['type'];
@@ -204,16 +195,14 @@ export class GLTFAccessor {
         }
     }
 
-    get byteStride()
-    {
+    get byteStride() {
         var elementSize = gltfTypeSize(this.componentType, this.gltfType);
         return Math.max(elementSize, this.view.byteStride);
     }
 }
 
 export class GLTFPrimitive {
-    constructor(indices, positions, normals, texcoords, material, topology)
-    {
+    constructor(indices, positions, normals, texcoords, material, topology) {
         this.indices = indices;
         this.positions = positions;
         this.normals = normals;
@@ -224,8 +213,7 @@ export class GLTFPrimitive {
 
     // Build the primitive render commands into the bundle
     buildRenderBundle(
-        device, shaderCache, bindGroupLayouts, bundleEncoder, swapChainFormat, depthFormat)
-    {
+        device, shaderCache, bindGroupLayouts, bundleEncoder, swapChainFormat, depthFormat) {
         var shaderModule = shaderCache.getShader(
             this.normals, this.texcoords.length > 0, this.material.baseColorTexture);
 
@@ -270,7 +258,7 @@ export class GLTFPrimitive {
             primitive.topology = 'triangle-strip';
             primitive.stripIndexFormat =
                 this.indices.componentType == GLTFComponentType.UNSIGNED_SHORT ? 'uint16'
-                                                                               : 'uint32';
+                    : 'uint32';
         }
 
         var pipelineDescriptor = {
@@ -286,27 +274,27 @@ export class GLTFPrimitive {
         bundleEncoder.setBindGroup(2, this.material.bindGroup);
         bundleEncoder.setPipeline(renderPipeline);
         bundleEncoder.setVertexBuffer(0,
-                                      this.positions.view.gpuBuffer,
-                                      this.positions.byteOffset,
-                                      this.positions.length);
+            this.positions.view.gpuBuffer,
+            this.positions.byteOffset,
+            this.positions.length);
         if (this.normals) {
             bundleEncoder.setVertexBuffer(
                 1, this.normals.view.gpuBuffer, this.normals.byteOffset, this.normals.length);
         }
         if (this.texcoords.length > 0) {
             bundleEncoder.setVertexBuffer(2,
-                                          this.texcoords[0].view.gpuBuffer,
-                                          this.texcoords[0].byteOffset,
-                                          this.texcoords[0].length);
+                this.texcoords[0].view.gpuBuffer,
+                this.texcoords[0].byteOffset,
+                this.texcoords[0].length);
         }
         if (this.indices) {
             var indexFormat = this.indices.componentType == GLTFComponentType.UNSIGNED_SHORT
-                                  ? 'uint16'
-                                  : 'uint32';
+                ? 'uint16'
+                : 'uint32';
             bundleEncoder.setIndexBuffer(this.indices.view.gpuBuffer,
-                                         indexFormat,
-                                         this.indices.byteOffset,
-                                         this.indices.length);
+                indexFormat,
+                this.indices.byteOffset,
+                this.indices.length);
             bundleEncoder.drawIndexed(this.indices.count);
         } else {
             bundleEncoder.draw(this.positions.count);
@@ -315,16 +303,14 @@ export class GLTFPrimitive {
 }
 
 export class GLTFMesh {
-    constructor(name, primitives)
-    {
+    constructor(name, primitives) {
         this.name = name;
         this.primitives = primitives;
     }
 }
 
 export class GLTFNode {
-    constructor(name, mesh, transform)
-    {
+    constructor(name, mesh, transform) {
         this.name = name;
         this.mesh = mesh;
         this.transform = transform;
@@ -333,8 +319,7 @@ export class GLTFNode {
         this.bindGroup = null;
     }
 
-    upload(device)
-    {
+    upload(device) {
         var buf = device.createBuffer(
             {size: 4 * 4 * 4, usage: GPUBufferUsage.UNIFORM, mappedAtCreation: true});
         new Float32Array(buf.getMappedRange()).set(this.transform);
@@ -343,12 +328,11 @@ export class GLTFNode {
     }
 
     buildRenderBundle(device,
-                      shaderCache,
-                      viewParamsLayout,
-                      viewParamsBindGroup,
-                      swapChainFormat,
-                      depthFormat)
-    {
+        shaderCache,
+        viewParamsLayout,
+        viewParamsBindGroup,
+        swapChainFormat,
+        depthFormat) {
         var nodeParamsLayout = device.createBindGroupLayout({
             entries:
                 [{binding: 0, visibility: GPUShaderStage.VERTEX, buffer: {type: 'uniform'}}]
@@ -371,11 +355,11 @@ export class GLTFNode {
 
         for (var i = 0; i < this.mesh.primitives.length; ++i) {
             this.mesh.primitives[i].buildRenderBundle(device,
-                                                      shaderCache,
-                                                      bindGroupLayouts,
-                                                      bundleEncoder,
-                                                      swapChainFormat,
-                                                      depthFormat);
+                shaderCache,
+                bindGroupLayouts,
+                bundleEncoder,
+                swapChainFormat,
+                depthFormat);
         }
 
         this.renderBundle = bundleEncoder.finish();
@@ -383,27 +367,26 @@ export class GLTFNode {
     }
 }
 
-function readNodeTransform(node)
-{
+function readNodeTransform(node) {
     if (node['matrix']) {
         var m = node['matrix'];
         // Both glTF and gl matrix are column major
         return mat4.fromValues(m[0],
-                               m[1],
-                               m[2],
-                               m[3],
-                               m[4],
-                               m[5],
-                               m[6],
-                               m[7],
-                               m[8],
-                               m[9],
-                               m[10],
-                               m[11],
-                               m[12],
-                               m[13],
-                               m[14],
-                               m[15]);
+            m[1],
+            m[2],
+            m[3],
+            m[4],
+            m[5],
+            m[6],
+            m[7],
+            m[8],
+            m[9],
+            m[10],
+            m[11],
+            m[12],
+            m[13],
+            m[14],
+            m[15]);
     } else {
         var scale = [1, 1, 1];
         var rotation = [0, 0, 0, 1];
@@ -422,8 +405,7 @@ function readNodeTransform(node)
     }
 }
 
-function flattenGLTFChildren(nodes, node, parent_transform)
-{
+function flattenGLTFChildren(nodes, node, parent_transform) {
     var tfm = readNodeTransform(node);
     var tfm = mat4.mul(tfm, parent_transform, tfm);
     node['matrix'] = tfm;
@@ -438,8 +420,7 @@ function flattenGLTFChildren(nodes, node, parent_transform)
     }
 }
 
-function makeGLTFSingleLevel(nodes)
-{
+function makeGLTFSingleLevel(nodes) {
     var rootTfm = mat4.create();
     for (var i = 0; i < nodes.length; ++i) {
         flattenGLTFChildren(nodes, nodes[i], rootTfm);
@@ -448,8 +429,7 @@ function makeGLTFSingleLevel(nodes)
 }
 
 export class GLTFMaterial {
-    constructor(material, textures)
-    {
+    constructor(material, textures) {
         this.baseColorFactor = [1, 1, 1, 1];
         this.baseColorTexture = null;
         // padded to float4
@@ -484,10 +464,9 @@ export class GLTFMaterial {
         this.bindGroup = null;
     }
 
-    upload(device)
-    {
+    upload(device) {
         var buf = device.createBuffer(
-            {size: (2 * 4 + 2) * 4, usage: GPUBufferUsage.UNIFORM, mappedAtCreation: true});
+            {size: 3 * 4 * 4, usage: GPUBufferUsage.UNIFORM, mappedAtCreation: true});
         var mappingView = new Float32Array(buf.getMappedRange());
         mappingView.set(this.baseColorFactor);
         mappingView.set(this.emissiveFactor, 4);
@@ -530,16 +509,15 @@ export class GLTFMaterial {
 }
 
 export class GLTFSampler {
-    constructor(sampler, device)
-    {
+    constructor(sampler, device) {
         var magFilter = sampler['magFilter'] === undefined ||
-                                sampler['magFilter'] == GLTFTextureFilter.LINEAR
-                            ? 'linear'
-                            : 'nearest';
+            sampler['magFilter'] == GLTFTextureFilter.LINEAR
+            ? 'linear'
+            : 'nearest';
         var minFilter = sampler['minFilter'] === undefined ||
-                                sampler['minFilter'] == GLTFTextureFilter.LINEAR
-                            ? 'linear'
-                            : 'nearest';
+            sampler['minFilter'] == GLTFTextureFilter.LINEAR
+            ? 'linear'
+            : 'nearest';
 
         var wrapS = 'repeat';
         if (sampler['wrapS'] !== undefined) {
@@ -573,8 +551,7 @@ export class GLTFSampler {
 }
 
 export class GLTFTexture {
-    constructor(sampler, image)
-    {
+    constructor(sampler, image) {
         this.gltfsampler = sampler;
         this.sampler = sampler.sampler;
         this.image = image;
@@ -583,23 +560,21 @@ export class GLTFTexture {
 }
 
 export class GLBModel {
-    constructor(nodes)
-    {
+    constructor(nodes) {
         this.nodes = nodes;
     }
 
     buildRenderBundles(
-        device, shaderCache, viewParamsLayout, viewParamsBindGroup, swapChainFormat)
-    {
+        device, shaderCache, viewParamsLayout, viewParamsBindGroup, swapChainFormat) {
         var renderBundles = [];
         for (var i = 0; i < this.nodes.length; ++i) {
             var n = this.nodes[i];
             var bundle = n.buildRenderBundle(device,
-                                             shaderCache,
-                                             viewParamsLayout,
-                                             viewParamsBindGroup,
-                                             swapChainFormat,
-                                             'depth24plus-stencil8');
+                shaderCache,
+                viewParamsLayout,
+                viewParamsBindGroup,
+                swapChainFormat,
+                'depth24plus-stencil8');
             renderBundles.push(bundle);
         }
         return renderBundles;
@@ -607,8 +582,7 @@ export class GLBModel {
 };
 
 // Upload a GLB model and return it
-export async function uploadGLBModel(buffer, device)
-{
+export async function uploadGLBModel(buffer, device) {
     // The file header and chunk 0 header
     // TODO: It sounds like the spec does allow for multiple binary chunks,
     // so then how do you know which chunk a buffer exists in? Maybe the buffer
@@ -619,11 +593,8 @@ export async function uploadGLBModel(buffer, device)
         alert('This does not appear to be a glb file?');
         return;
     }
-    console.log(`GLB Version ${header[1]}, file length ${header[2]}`);
-    console.log(`JSON chunk length ${header[3]}, type ${header[4]}`);
     var glbJsonData =
         JSON.parse(new TextDecoder('utf-8').decode(new Uint8Array(buffer, 20, header[3])));
-    console.log(glbJsonData);
 
     var binaryHeader = new Uint32Array(buffer, 20 + header[3], 2);
     var glbBuffer = new GLTFBuffer(buffer, binaryHeader[0], 28 + header[3]);
@@ -657,7 +628,7 @@ export async function uploadGLBModel(buffer, device)
                 size: [img.width, img.height, 1],
                 format: 'rgba8unorm-srgb',
                 usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST |
-                           GPUTextureUsage.RENDER_ATTACHMENT,
+                    GPUTextureUsage.RENDER_ATTACHMENT,
             });
 
             var src = {source: img};

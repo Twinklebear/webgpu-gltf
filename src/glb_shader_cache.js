@@ -1,12 +1,10 @@
 export class GLBShaderCache {
-    constructor(device)
-    {
+    constructor(device) {
         this.device = device;
         this.shaderCache = {};
     }
 
-    getShader(hasNormals, hasUVs, hasColorTexture)
-    {
+    getShader(hasNormals, hasUVs, hasColorTexture) {
         var shaderID = "glb";
         if (hasNormals) {
             shaderID += "n";
@@ -25,13 +23,12 @@ export class GLBShaderCache {
     }
 }
 
-function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
-{
+function generateGLTFShader(hasNormals, hasUVs, hasColorTexture) {
     var typeDefs =
         `
-    type float2 = vec2<f32>;
-    type float3 = vec3<f32>;
-    type float4 = vec4<f32>;
+    alias float2 = vec2<f32>;
+    alias float3 = vec3<f32>;
+    alias float4 = vec4<f32>;
     `;
 
     var vertexInputStruct =
@@ -82,7 +79,7 @@ function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
     `;
 
     var vertexStage = vertexInputStruct + vertexOutputStruct + vertexUniformParams +
-                      `
+        `
     @vertex
     fn vertex_main(vin: VertexInput) -> VertexOutput {
         var vout: VertexOutput;
@@ -129,7 +126,7 @@ function generateGLTFShader(hasNormals, hasUVs, hasColorTexture)
     }
 
     var fragmentStage = fragmentParams +
-                        `
+        `
     fn linear_to_srgb(x: f32) -> f32 {
         if (x <= 0.0031308) {
             return 12.92 * x;
