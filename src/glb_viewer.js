@@ -22,7 +22,7 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
 
     var glbFile =
         await fetch(
-            "https://www.dl.dropboxusercontent.com/s/7ndj8pfjhact7lz/DamagedHelmet.glb?dl=1")
+            "https://cdn.willusher.io/glb/DamagedHelmet.glb")
             .then(res => res.arrayBuffer().then(buf => uploadGLBModel(buf, device)));
 
     var canvas = document.getElementById("webgpu-canvas");
