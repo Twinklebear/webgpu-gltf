@@ -185,7 +185,6 @@ export class GLTFAccessor {
         this.count = accessor['count'];
         this.componentType = accessor['componentType'];
         this.gltfType = accessor['type'];
-        this.webGPUType = gltfTypeToWebGPU(this.componentType, accessor['type']);
         this.numComponents = gltfTypeNumComponents(accessor['type']);
         this.numScalars = this.count * this.numComponents;
         this.view = view;
