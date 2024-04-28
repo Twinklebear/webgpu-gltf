@@ -32,7 +32,7 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
         {device: device, format: swapChainFormat, usage: GPUTextureUsage.RENDER_ATTACHMENT});
 
     var depthTexture = device.createTexture({
-        size: {width: canvas.width, height: canvas.height, depth: 1},
+        size: {width: canvas.width, height: canvas.height, depthOrArrayLayers: 1},
         format: "depth24plus-stencil8",
         usage: GPUTextureUsage.RENDER_ATTACHMENT
     });
@@ -90,14 +90,6 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
     };
     controller.registerForCanvas(canvas);
 
-    var animationFrame = function () {
-        var resolve = null;
-        var promise = new Promise(r => resolve = r);
-        window.requestAnimationFrame(resolve);
-        return promise
-    };
-    requestAnimationFrame(animationFrame);
-
     // Setup onchange listener for file uploads
     var glbBuffer = null;
     document.getElementById("uploadGLB").onchange =
@@ -116,8 +108,7 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
     var fpsDisplay = document.getElementById("fps");
     var numFrames = 0;
     var totalTimeMS = 0;
-    while (true) {
-        await animationFrame();
+    const render = async () => {
         if (glbBuffer != null) {
             glbFile = await uploadGLBModel(glbBuffer, device);
             renderBundles = glbFile.buildRenderBundles(
@@ -154,6 +145,9 @@ import {GLBShaderCache} from "./glb_shader_cache.js";
         numFrames += 1;
         totalTimeMS += end - start;
         fpsDisplay.innerHTML = `Avg. FPS ${Math.round(1000.0 * numFrames / totalTimeMS)}`;
-    }
+        requestAnimationFrame(render);
+        upload.destroy();
+    };
+    requestAnimationFrame(render);
 })();
 
